@@ -15,14 +15,14 @@ export type Game = {
   id: number;
   image: GameImage;
   name: string;
-  deck: string;
-  description: string;
+  deck: string | null;
+  description: string | null;
   original_release_date?: string;
   site_detail_url: string;
-  expected_release_day?: string;
-  expected_release_month?: string;
-  expected_release_year?: string;
-  expected_release_quarter?: string;
+  expected_release_day?: string | null;
+  expected_release_month?: string | null;
+  expected_release_year?: string | null;
+  expected_release_quarter?: string | null;
   platforms: {
     api_detail_url: string;
     id: number;
