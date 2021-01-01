@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "jest --watch"
   },
   "husky": {
     "hooks": {
@@ -12,16 +13,21 @@
     }
   },
   "dependencies": {
+    "isomorphic-unfetch": "^3.1.0",
     "next": "latest",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.19",
     "@types/node": "^14.14.19",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "autoprefixer": "10.0.2",
+    "babel-jest": "^26.6.3",
     "husky": "^4.3.6",
+    "jest": "^26.6.3",
+    "msw": "^0.24.4",
     "postcss": "8.1.7",
     "prettier": "^2.2.1",
     "pretty-quick": "^3.1.0",
