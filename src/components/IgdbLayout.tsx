@@ -61,7 +61,7 @@ export function IgdbLayout(props: Props) {
             game.platforms.map(plat => (
               <p
                 key={plat.id}
-                className="bg-blue-800 p-1 text-sm rounded whitespace-nowrap"
+                className="bg-blue-800 p-1 text-sm rounded whitespace-nowrap text-gray-100"
               >
                 {plat.name}
               </p>
