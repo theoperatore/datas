@@ -41,6 +41,6 @@ export async function getStaticProps(context: C): Promise<R> {
       game,
       error,
     },
-    revalidate: 1,
+    revalidate: 60,
   };
 }
