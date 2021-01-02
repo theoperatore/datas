@@ -84,6 +84,6 @@ export async function getStaticProps(): Promise<R> {
       igdbGame,
       error,
     },
-    revalidate: 10,
+    revalidate: 60,
   };
 }
