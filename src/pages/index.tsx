@@ -1,4 +1,4 @@
-import { GetStaticProps, GetStaticPropsContext } from 'next';
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { Game, getRandomGotd } from '../clients/gotd';
 import { GameLayout } from '../components/GameLayout';
@@ -27,8 +27,7 @@ export default function IndexPage(props: Props) {
 }
 
 type R = ReturnType<GetStaticProps<Props>>;
-type C = GetStaticPropsContext;
-export async function getStaticProps(context: C): Promise<R> {
+export async function getStaticProps(): Promise<R> {
   let game: Game | null = null;
   let error = '';
   try {
@@ -43,5 +42,6 @@ export async function getStaticProps(context: C): Promise<R> {
       game,
       error,
     },
+    revalidate: 10,
   };
 }
