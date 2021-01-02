@@ -1,4 +1,4 @@
-import { GetServerSideProps, GetStaticProps } from 'next';
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { Game, getRandomGotd } from '../clients/gotd';
 import { GameLayout } from '../components/GameLayout';
@@ -45,22 +45,3 @@ export async function getStaticProps(): Promise<R> {
     revalidate: 10,
   };
 }
-
-// type SSR = ReturnType<GetServerSideProps<Props>>;
-// export async function getServerSideProps(): Promise<SSR> {
-//   let game: Game | null = null;
-//   let error = '';
-//   try {
-//     game = await getRandomGotd(process.env.GB_TOKEN);
-//   } catch (error) {
-//     game = null;
-//     error = error.message;
-//   }
-
-//   return {
-//     props: {
-//       game,
-//       error,
-//     },
-//   };
-// }
