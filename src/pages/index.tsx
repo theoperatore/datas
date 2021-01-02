@@ -17,7 +17,9 @@ export default function IndexPage(props: Props) {
       </Head>
       <Nav />
       <div className="py-15">
-        {props.error && <p>{props.error}</p>}
+        {props.error && (
+          <p className="text-gray-700 dark:text-gray-100">{props.error}</p>
+        )}
         {props.game && <GameLayout game={props.game} />}
       </div>
     </div>
@@ -41,6 +43,5 @@ export async function getStaticProps(context: C): Promise<R> {
       game,
       error,
     },
-    revalidate: 60,
   };
 }
