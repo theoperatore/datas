@@ -10,6 +10,11 @@ export default async function random(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
+  if (!process.env.GB_TOKEN) {
+    res.json({ status: 'ERROR', result: 'No api token' });
+    return;
+  }
+
   try {
     const game = await getRandomGotd(process.env.GB_TOKEN);
     res.json({ status: 'OK', result: game });
