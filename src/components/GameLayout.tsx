@@ -10,12 +10,13 @@ export function GameLayout(props: Props) {
   const { game } = props;
   return (
     <div className="flex justify-center py-8 text-gray-700 dark:text-gray-100 m-auto max-w-prose">
-      <div className="mr-8" style={{ minWidth: '350px' }}>
+      <div className="mr-8" style={{ minWidth: '240px' }}>
         <Image
           src={selectImage(game.image)}
-          width={350}
-          height={350}
-          objectFit="contain"
+          width={240}
+          height={320}
+          objectFit="cover"
+          objectPosition="center top"
         />
       </div>
       <div>
