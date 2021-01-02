@@ -13,7 +13,7 @@ export function selectImage(image: GameImage) {
   }`;
 }
 
-const dateFormatter = (date: string | number) =>
+export const dateFormatter = (date: string | number) =>
   new Intl.DateTimeFormat('en', {
     timeZone: 'UTC',
     month: 'short',

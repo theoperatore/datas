@@ -9,7 +9,7 @@ type Props = {
 export function GameLayout(props: Props) {
   const { game } = props;
   return (
-    <div className="flex justify-center py-8 text-gray-700 dark:text-gray-100 m-auto max-w-prose">
+    <div className="flex py-8 text-gray-700 dark:text-gray-100">
       <div className="mr-8" style={{ minWidth: '240px' }}>
         <Image
           src={selectImage(game.image)}
@@ -22,7 +22,7 @@ export function GameLayout(props: Props) {
       <div>
         <p className="font-xs">{formatDateFromGame(game)}</p>
         <h2 className="pb-2 text-2xl font-bold">{game.name}</h2>
-        <div className="flex flex-row mb-8 gap-2">
+        <div className="flex flex-row flex-wrap mb-8 gap-2">
           {game.platforms &&
             game.platforms.map(plat => (
               <p
