@@ -2,9 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [$default-branch]
+    branches: [main]
   pull_request:
-    branches: [$default-branch]
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: 14.x
+        node-version: [14.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -23,4 +24,4 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
       - name: Run Tests
-        run: yarn test
+        run: yarn test:ci
