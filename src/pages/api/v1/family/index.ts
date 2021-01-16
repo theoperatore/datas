@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { withFamilyAuth } from '../../../../middlewares';
 
 type Response<T = any> = {
   status: 'OK' | 'ERROR';
@@ -6,17 +7,8 @@ type Response<T = any> = {
   data?: T;
 };
 
-export default async function family(
-  req: NextApiRequest,
-  res: NextApiResponse<Response>,
-) {
-  if (!req.headers['x-family-api']) {
-    return res.status(401).end();
-  }
-
-  if (req.headers['x-family-api'] !== process.env.FAMILY_API_SECRET) {
-    return res.status(403).end();
-  }
-
+async function family(req: NextApiRequest, res: NextApiResponse<Response>) {
   res.json({ status: 'ERROR', error: 'NOT_IMPLEMENTED' });
 }
+
+export default withFamilyAuth(process.env.FAMILY_API_SECRET, family);
