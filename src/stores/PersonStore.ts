@@ -110,9 +110,12 @@ export class PersonStore implements IPersonStore {
         const result = await trx
           .select('*')
           .from('edges')
-          .where('a_id', query.id)
-          .orWhere('b_id', query.id)
-          .andWhere('rel_type', query.relType || '')
+          .where(b => b.where('a_id', query.id).orWhere('b_id', query.id))
+          .andWhere(builder => {
+            if (query.relType) {
+              return builder.where('rel_type', query.relType);
+            }
+          })
           .limit(query.limit || 10);
 
         results.push([
