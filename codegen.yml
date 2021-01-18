@@ -1,0 +1,10 @@
+overwrite: true
+schema: './src/schema/schema.ts'
+documents: null
+generates:
+  ./src/schema/schema.generated.ts:
+    config:
+      useIndexSignature: true
+    plugins:
+      - 'typescript'
+      - 'typescript-resolvers'
