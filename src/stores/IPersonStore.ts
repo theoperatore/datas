@@ -1,4 +1,4 @@
-export type RelType = 'CHILD' | 'PARENT' | 'SPOUSE';
+export type RelType = 'PARENT_OF' | 'SPOUSE';
 
 export type Edge<E extends { [key: string]: any }> = {
   id: string;

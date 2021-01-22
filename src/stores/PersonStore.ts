@@ -116,7 +116,7 @@ export class PersonStore implements IPersonStore {
               return builder.where('rel_type', query.relType);
             }
           })
-          .limit(query.limit || 10);
+          .limit(query.limit || 100);
 
         results.push([
           query.id,

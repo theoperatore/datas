@@ -44,8 +44,7 @@ export type Relationship = {
 };
 
 export enum RelationshipType {
-  Child = 'CHILD',
-  Parent = 'PARENT',
+  ParentOf = 'PARENT_OF',
   Spouse = 'SPOUSE',
 }
 

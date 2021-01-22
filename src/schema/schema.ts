@@ -18,8 +18,7 @@ export const typeDefs = gql`
   }
 
   enum RelationshipType {
-    CHILD
-    PARENT
+    PARENT_OF
     SPOUSE
   }
 `;

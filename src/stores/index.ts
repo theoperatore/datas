@@ -28,9 +28,13 @@ export class PersonStoreDataSource extends DataSource {
       // }),
     );
   }
+  async getEdgesForPerson(id: string) {
+    return this.store.query([{ id, limit: 100 }]);
+  }
 
   async getPersons(ids: string[]) {
-    const result = await this.store.getPersons(ids, ids.length);
-    return ids.map(id => result.get(id)).filter(i => i);
+    const persons = await this.store.getPersons(ids, ids.length);
+
+    return ids.map(id => persons.get(id)).filter(i => i);
   }
 }
