@@ -15,12 +15,44 @@ export const resolvers: Resolvers<Context> = {
       return dbPersons.map(person => ({
         id: person.id,
         name: person.name,
-        relationships: [],
+        personToMe: [],
+        meToPerson: [],
       }));
     },
   },
+  Mutation: {
+    async createPerson(_parent, args, { dataSources }) {
+      const person = await dataSources.personStore.createPerson(args.name);
+      // just await don't return. let the normal graph resolution process
+      // query for the created edges.
+      // there is a possible out-of-sync error condition here, where the
+      // person gets created successfully, but the relationships do not.
+      // Since this isn't done in a transaction they won't get rolled back...
+      // mabye this isn't a problem yet?
+      await dataSources.personStore.createRelationships(
+        person.id,
+        args.relationships,
+      );
+
+      return {
+        id: person.id,
+        name: person.name,
+
+        // even though some might have been created, let the normal graph
+        // resllution process fill this out
+        personToMe: [],
+        meToPerson: [],
+      };
+    },
+  },
   Person: {
-    relationships: async (parent, _args, { dataSources }) => {
+    name: async (parent, _args, { dataSources }) => {
+      if (parent.name) return parent.name;
+
+      const [person] = await dataSources.personStore.getPersons([parent.id]);
+      return person.name;
+    },
+    personToMe: async (parent, _args, { dataSources }) => {
       const edgesMap = await dataSources.personStore.getEdgesForPerson(
         parent.id,
       );
@@ -28,12 +60,30 @@ export const resolvers: Resolvers<Context> = {
 
       if (!edges) return [];
 
-      return edges.map(edge => {
+      return edges.parents.map(edge => {
         return {
           id: edge.id,
           type: edge.rel_type,
-          other: {
-            id: edge.a_id === parent.id ? edge.b_id : edge.a_id,
+          person: {
+            id: edge.a_id,
+          } as Person,
+        } as Relationship;
+      });
+    },
+    meToPerson: async (parent, _args, { dataSources }) => {
+      const edgesMap = await dataSources.personStore.getEdgesForPerson(
+        parent.id,
+      );
+      const edges = edgesMap.get(parent.id);
+
+      if (!edges) return [];
+
+      return edges.children.map(edge => {
+        return {
+          id: edge.id,
+          type: edge.rel_type,
+          person: {
+            id: edge.b_id,
           } as Person,
         } as Relationship;
       });

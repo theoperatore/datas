@@ -73,7 +73,7 @@ test('It can create an edge between two persons', async () => {
     { name: 'Test 1' },
     { name: 'Test 2' },
   ]);
-  const expected: any = { a_id: p1.id, b_id: p2.id, rel_type: 'PARENT' };
+  const expected: any = { a_id: p1.id, b_id: p2.id, rel_type: 'PARENT_OF' };
 
   const [result] = await store.putEdges([expected]);
   expect(result).toMatchObject(expected);
@@ -86,7 +86,7 @@ test('It can remove edges between two persons', async () => {
     { name: 'Test 2' },
   ]);
   const [edge] = await store.putEdges([
-    { a_id: p1.id, b_id: p2.id, rel_type: 'PARENT' },
+    { a_id: p1.id, b_id: p2.id, rel_type: 'PARENT_OF' },
   ]);
   const [removedId] = await store.removeEdges([edge.id]);
   expect(removedId).toEqual(edge.id);
@@ -101,12 +101,34 @@ test('It can query for a relationships', async () => {
     { name: 'Test 2' },
   ]);
   const [edge] = await store.putEdges([
-    { a_id: p1.id, b_id: p2.id, rel_type: 'PARENT' },
+    { a_id: p1.id, b_id: p2.id, rel_type: 'PARENT_OF' },
   ]);
 
-  const resultsMap = await store.query([{ id: p1.id, relType: 'PARENT' }]);
+  const resultsMap = await store.query([{ id: p1.id, relType: 'PARENT_OF' }]);
   const [result] = resultsMap.get(p1.id);
   expect(result).toMatchObject(edge);
+});
+
+test('It can query for directed relationships', async () => {
+  const store = new PersonStore(knex);
+  const [p1, p2] = await store.putPersons([
+    { name: 'Test 1' },
+    { name: 'Test 2' },
+  ]);
+  const [edge] = await store.putEdges([
+    { a_id: p1.id, b_id: p2.id, rel_type: 'PARENT_OF' },
+  ]);
+
+  const resultsMap = await store.queryDirected([{ id: p1.id }]);
+  const result = resultsMap.get(p1.id).children[0];
+  expect(result).toMatchObject(edge);
+  expect(resultsMap.get(p1.id).parents).toHaveLength(0);
+
+  const p2ResultsMap = await store.queryDirected([{ id: p2.id }]);
+  const p2Results = p2ResultsMap.get(p2.id);
+  expect(p2Results.children).toHaveLength(0);
+  expect(p2Results.parents[0]).toMatchObject(edge);
+  expect(p2Results.parents).toHaveLength(1);
 });
 
 test('It can store json data on a person', async () => {

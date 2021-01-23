@@ -2,18 +2,31 @@ import { gql } from 'apollo-server-micro';
 
 export const typeDefs = gql`
   type Query {
-    persons(ids: [ID!] = []): [Person!]
+    persons(ids: [ID!] = []): [Person!]!
+  }
+
+  type Mutation {
+    createPerson(
+      name: String!
+      relationships: [RelationshipInput!] = []
+    ): Person!
+  }
+
+  input RelationshipInput {
+    otherId: ID!
+    type: RelationshipType!
   }
 
   type Person {
     id: ID!
     name: String!
-    relationships: [Relationship!]!
+    personToMe: [Relationship!]!
+    meToPerson: [Relationship!]!
   }
 
   type Relationship {
     id: ID!
-    other: Person!
+    person: Person!
     type: RelationshipType!
   }
 

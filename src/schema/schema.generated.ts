@@ -22,24 +22,40 @@ export type Scalars = {
 
 export type Query = {
   __typename?: 'Query';
-  persons?: Maybe<Array<Person>>;
+  persons: Array<Person>;
 };
 
 export type QueryPersonsArgs = {
   ids?: Maybe<Array<Scalars['ID']>>;
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  createPerson: Person;
+};
+
+export type MutationCreatePersonArgs = {
+  name: Scalars['String'];
+  relationships?: Maybe<Array<RelationshipInput>>;
+};
+
+export type RelationshipInput = {
+  otherId: Scalars['ID'];
+  type: RelationshipType;
+};
+
 export type Person = {
   __typename?: 'Person';
   id: Scalars['ID'];
   name: Scalars['String'];
-  relationships: Array<Relationship>;
+  personToMe: Array<Relationship>;
+  meToPerson: Array<Relationship>;
 };
 
 export type Relationship = {
   __typename?: 'Relationship';
   id: Scalars['ID'];
-  other: Person;
+  person: Person;
   type: RelationshipType;
 };
 
@@ -169,8 +185,10 @@ export type DirectiveResolverFn<
 export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
-  Person: ResolverTypeWrapper<Person>;
+  Mutation: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  RelationshipInput: RelationshipInput;
+  Person: ResolverTypeWrapper<Person>;
   Relationship: ResolverTypeWrapper<Relationship>;
   RelationshipType: RelationshipType;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -180,8 +198,10 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   Query: {};
   ID: Scalars['ID'];
-  Person: Person;
+  Mutation: {};
   String: Scalars['String'];
+  RelationshipInput: RelationshipInput;
+  Person: Person;
   Relationship: Relationship;
   Boolean: Scalars['Boolean'];
 }>;
@@ -191,10 +211,22 @@ export type QueryResolvers<
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
 > = ResolversObject<{
   persons?: Resolver<
-    Maybe<Array<ResolversTypes['Person']>>,
+    Array<ResolversTypes['Person']>,
     ParentType,
     ContextType,
     RequireFields<QueryPersonsArgs, 'ids'>
+  >;
+}>;
+
+export type MutationResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
+> = ResolversObject<{
+  createPerson?: Resolver<
+    ResolversTypes['Person'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreatePersonArgs, 'name' | 'relationships'>
   >;
 }>;
 
@@ -204,7 +236,12 @@ export type PersonResolvers<
 > = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  relationships?: Resolver<
+  personToMe?: Resolver<
+    Array<ResolversTypes['Relationship']>,
+    ParentType,
+    ContextType
+  >;
+  meToPerson?: Resolver<
     Array<ResolversTypes['Relationship']>,
     ParentType,
     ContextType
@@ -217,13 +254,14 @@ export type RelationshipResolvers<
   ParentType extends ResolversParentTypes['Relationship'] = ResolversParentTypes['Relationship']
 > = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  other?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
+  person?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['RelationshipType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
   Person?: PersonResolvers<ContextType>;
   Relationship?: RelationshipResolvers<ContextType>;
 }>;

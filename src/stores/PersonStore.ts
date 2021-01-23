@@ -1,5 +1,11 @@
 import Knex from 'knex';
-import { IPersonStore, Person, Edge, Query } from './IPersonStore';
+import {
+  IPersonStore,
+  Person,
+  Edge,
+  Query,
+  DirectedResult,
+} from './IPersonStore';
 
 export class PersonStore implements IPersonStore {
   private knex: Knex;
@@ -128,6 +134,52 @@ export class PersonStore implements IPersonStore {
       }
 
       return new Map<string, Edge<E>[]>(results);
+    });
+  }
+
+  async queryDirected<E>(q: Query[]) {
+    return this.knex.transaction(async trx => {
+      const results = [];
+      for (const query of q) {
+        const [children, parents] = await Promise.all([
+          trx
+            .select('*')
+            .from('edges')
+            .where('a_id', query.id)
+            .andWhere(b => {
+              if (query.relType) {
+                return b.where('rel_type', query.relType);
+              }
+            })
+            .limit(query.limit || 100),
+          trx
+            .select('*')
+            .from('edges')
+            .where('b_id', query.id)
+            .andWhere(b => {
+              if (query.relType) {
+                return b.where('rel_type', query.relType);
+              }
+            })
+            .limit(query.limit || 100),
+        ]);
+
+        results.push([
+          query.id,
+          {
+            parents: parents.map(r => {
+              const data = typeof r.data === 'string' ? JSON.parse(r.data) : {};
+              return { ...r, id: `${r.id}`, data };
+            }),
+            children: children.map(r => {
+              const data = typeof r.data === 'string' ? JSON.parse(r.data) : {};
+              return { ...r, id: `${r.id}`, data };
+            }),
+          },
+        ]);
+      }
+
+      return new Map<string, DirectedResult<E>>(results);
     });
   }
 }

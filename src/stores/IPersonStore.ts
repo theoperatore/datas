@@ -20,6 +20,11 @@ export type Query = {
   relType?: RelType;
 };
 
+export type DirectedResult<E> = {
+  parents: Edge<E>[];
+  children: Edge<E>[];
+};
+
 export interface IPersonStore {
   /**
    * Get many Persons from their Ids. Useful for getting the data associated with the Person.
@@ -78,4 +83,14 @@ export interface IPersonStore {
    * // do something with those persons.
    */
   query<E>(q: Query[]): Promise<Map<string, Edge<E>[]>>;
+
+  /**
+   * Query for Edges.
+   * @param q Array of Query objects that specify a Person Id (can be either
+   * person a or b in the edge) and optional rel type to query for.
+   * Can also limit the number of relationships returned. Default
+   * is to return all edges.
+   * @returns A Map of person Id to Edge array. Rejects only if reading fails.
+   */
+  queryDirected<E>(q: Query[]): Promise<Map<string, DirectedResult<E>>>;
 }
