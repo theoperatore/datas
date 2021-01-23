@@ -1,5 +1,6 @@
 import fs from 'fs';
 import Knex from 'knex';
+import { Edge } from './IPersonStore';
 import { PersonStore } from './PersonStore';
 
 let knex: Knex;
@@ -118,6 +119,31 @@ test('It can create an edge between two persons', async () => {
 
   const [result] = await store.putEdges([expected]);
   expect(result).toMatchObject(expected);
+});
+
+test('It can update an edge between two persons', async () => {
+  const store = new PersonStore(knex);
+  const [p1, p2] = await store.putPersons([
+    { name: 'Test 1' },
+    { name: 'Test 2' },
+  ]);
+  const initialEdge: Omit<Edge<any>, 'id'> = {
+    a_id: p1.id,
+    b_id: p2.id,
+    rel_type: 'SPOUSE',
+  };
+
+  const [result] = await store.putEdges([initialEdge]);
+  expect(result).toMatchObject(initialEdge);
+
+  const updatedEdge: Edge<any> = {
+    ...result,
+    rel_type: 'PARENT_OF',
+  };
+
+  const [updatedResult] = await store.putEdges([updatedEdge]);
+  expect(updatedResult).toMatchObject(updatedEdge);
+  expect(updatedResult.id).toEqual(updatedEdge.id);
 });
 
 test('It can remove edges between two persons', async () => {

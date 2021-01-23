@@ -5,6 +5,7 @@ import {
   Edge,
   Query,
   DirectedResult,
+  RelType,
 } from './IPersonStore';
 
 export class PersonStore implements IPersonStore {
@@ -105,19 +106,45 @@ export class PersonStore implements IPersonStore {
     });
   }
 
-  async putEdges<E>(edges: Omit<Edge<E>, 'id'>[]) {
+  async putEdges<E>(
+    edges: {
+      a_id: string;
+      b_id: string;
+      rel_type: RelType;
+      data?: E;
+      id?: string;
+    }[],
+  ) {
     return this.knex.transaction(async trx => {
       const out: Edge<E>[] = [];
 
       for (const edge of edges) {
-        const [id] = await trx
-          .insert({
-            a_id: edge.a_id,
-            b_id: edge.b_id,
-            rel_type: edge.rel_type,
-            data: JSON.stringify(edge.data || {}),
-          })
-          .into('edges');
+        let id: number | string;
+        if (edge.id) {
+          // TODO: should this have conditional fields so
+          // we only update the fields that are given rather
+          // that require all of it or nothing?
+          await trx
+            .update({
+              rel_type: edge.rel_type,
+              data: JSON.stringify(edge.data || {}),
+            })
+            .where('id', edge.id)
+            .into('edges');
+
+          id = edge.id;
+        } else {
+          const [result] = await trx
+            .insert({
+              a_id: edge.a_id,
+              b_id: edge.b_id,
+              rel_type: edge.rel_type,
+              data: JSON.stringify(edge.data || {}),
+            })
+            .into('edges');
+
+          id = result;
+        }
 
         const [record] = await trx
           .select('*')
