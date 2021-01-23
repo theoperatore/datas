@@ -1,7 +1,10 @@
 import { DataSource } from 'apollo-datasource';
 import Knex from 'knex';
 import DataLoader from 'dataloader';
-import { RelationshipInput } from '../schema/schema.generated';
+import {
+  RelationshipInput,
+  RelationshipType,
+} from '../schema/schema.generated';
 import { PersonStore } from './PersonStore';
 import { Person, DirectedResult } from './IPersonStore';
 
@@ -46,6 +49,10 @@ export class PersonStoreDataSource extends DataSource {
   async createPerson(name: string) {
     const [result] = await this.store.putPersons([{ name }]);
     return result;
+  }
+
+  async linkPersons(a_id: string, b_id: string, type: RelationshipType) {
+    return this.store.putEdges([{ a_id, b_id, rel_type: type }]);
   }
 
   async createRelationships(a_id: string, rels: RelationshipInput[]) {

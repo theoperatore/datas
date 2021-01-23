@@ -55,6 +55,11 @@ export const resolvers: Resolvers<Context> = {
         meToPerson: [],
       };
     },
+
+    async linkPersons(_, args, { dataSources }) {
+      await dataSources.personStore.linkPersons(args.from, args.to, args.type);
+      return true;
+    },
   },
   Person: {
     name: async (parent, _args, { dataSources }) => {

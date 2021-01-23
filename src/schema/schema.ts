@@ -11,6 +11,7 @@ export const typeDefs = gql`
       name: String!
       relationships: [RelationshipInput!] = []
     ): Person!
+    linkPersons(from: ID!, to: ID!, type: RelationshipType!): Boolean
   }
 
   input RelationshipInput {

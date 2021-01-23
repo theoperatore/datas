@@ -39,11 +39,18 @@ export type QueryPersonsArgs = {
 export type Mutation = {
   __typename?: 'Mutation';
   createPerson: Person;
+  linkPersons?: Maybe<Scalars['Boolean']>;
 };
 
 export type MutationCreatePersonArgs = {
   name: Scalars['String'];
   relationships?: Maybe<Array<RelationshipInput>>;
+};
+
+export type MutationLinkPersonsArgs = {
+  from: Scalars['ID'];
+  to: Scalars['ID'];
+  type: RelationshipType;
 };
 
 export type RelationshipInput = {
@@ -200,12 +207,12 @@ export type ResolversTypes = ResolversObject<{
   Int: ResolverTypeWrapper<Scalars['Int']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Mutation: ResolverTypeWrapper<{}>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   RelationshipInput: RelationshipInput;
   SearchResult: ResolverTypeWrapper<SearchResult>;
   Person: ResolverTypeWrapper<Person>;
   Relationship: ResolverTypeWrapper<Relationship>;
   RelationshipType: RelationshipType;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -215,11 +222,11 @@ export type ResolversParentTypes = ResolversObject<{
   Int: Scalars['Int'];
   ID: Scalars['ID'];
   Mutation: {};
+  Boolean: Scalars['Boolean'];
   RelationshipInput: RelationshipInput;
   SearchResult: SearchResult;
   Person: Person;
   Relationship: Relationship;
-  Boolean: Scalars['Boolean'];
 }>;
 
 export type QueryResolvers<
@@ -249,6 +256,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationCreatePersonArgs, 'name' | 'relationships'>
+  >;
+  linkPersons?: Resolver<
+    Maybe<ResolversTypes['Boolean']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationLinkPersonsArgs, 'from' | 'to' | 'type'>
   >;
 }>;
 
