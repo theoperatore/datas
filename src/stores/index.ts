@@ -49,4 +49,8 @@ export class PersonStoreDataSource extends DataSource {
     const edges = rels.map(e => ({ a_id, b_id: e.otherId, rel_type: e.type }));
     return await this.store.putEdges(edges);
   }
+
+  async search(name: string, limit?: number, offset?: number) {
+    return this.store.searchByName(name, limit, offset);
+  }
 }

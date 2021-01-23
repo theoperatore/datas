@@ -171,3 +171,11 @@ test('It can store json data on an edge', async () => {
   expect(result).toMatchObject(edge);
   expect(queryEdge).toMatchObject(edge);
 });
+
+test('It can search by name', async () => {
+  const store = new PersonStore(knex);
+  const [p1] = await store.putPersons([{ name: 'Search' }]);
+  const results = await store.searchByName('rch');
+  expect(results[0]).toMatchObject(p1);
+  expect(results).toHaveLength(1);
+});

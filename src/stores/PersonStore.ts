@@ -31,6 +31,23 @@ export class PersonStore implements IPersonStore {
     // });
     this.knex = knex;
   }
+  async searchByName(
+    nameLike: string,
+    limit: number = 10,
+    offset: number = 0,
+  ): Promise<Person[]> {
+    const results = await this.knex
+      .select('*')
+      .from('persons')
+      .where('name', 'like', `%${nameLike}%`)
+      .limit(limit)
+      .offset(offset);
+
+    return results.map(p => ({
+      ...p,
+      id: `${p.id}`,
+    }));
+  }
 
   async removePersons(ids: string[]): Promise<string[]> {
     await this.knex.delete().from('persons').whereIn('id', ids);

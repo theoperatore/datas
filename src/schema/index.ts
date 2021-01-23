@@ -19,6 +19,23 @@ export const resolvers: Resolvers<Context> = {
         meToPerson: [],
       }));
     },
+    async search(_, args, { dataSources }) {
+      const results = await dataSources.personStore.search(
+        args.name,
+        args.limit,
+        args.offset,
+      );
+      const persons = results.map(p => ({
+        id: p.id,
+        name: p.name,
+        personToMe: [],
+        meToPerson: [],
+      }));
+
+      return {
+        persons,
+      };
+    },
   },
   Mutation: {
     async createPerson(_parent, args, { dataSources }) {

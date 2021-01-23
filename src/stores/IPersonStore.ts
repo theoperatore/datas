@@ -93,4 +93,16 @@ export interface IPersonStore {
    * @returns A Map of person Id to Edge array. Rejects only if reading fails.
    */
   queryDirected<E>(q: Query[]): Promise<Map<string, DirectedResult<E>>>;
+
+  /**
+   * Search for persons by their name.
+   * @param nameLike Partial to match
+   * @param limit how many to return
+   * @param offset where to start
+   */
+  searchByName(
+    nameLike: string,
+    limit: number,
+    offset: number,
+  ): Promise<Person[]>;
 }
