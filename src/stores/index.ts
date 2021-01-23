@@ -1,10 +1,32 @@
 import { DataSource } from 'apollo-datasource';
 import Knex from 'knex';
+import DataLoader from 'dataloader';
 import { RelationshipInput } from '../schema/schema.generated';
 import { PersonStore } from './PersonStore';
+import { Person, DirectedResult } from './IPersonStore';
+
+function createPersonLoader(store: PersonStore) {
+  return new DataLoader<string, Person>(async ids => {
+    const resultsMap = await store.getPersons(ids);
+    return ids.map(i => resultsMap.get(i));
+  });
+}
+
+function createQueryLoader<E>(store: PersonStore) {
+  return new DataLoader<string, DirectedResult<E>>(async ids => {
+    const resultsMap = await store.queryDirected<E>(
+      ids.map(id => ({ id, limit: 100 })),
+    );
+
+    return ids.map(id => resultsMap.get(id));
+  });
+}
 
 export class PersonStoreDataSource extends DataSource {
   private store: PersonStore;
+  private personLoader: DataLoader<string, Person>;
+  private queryLoader: DataLoader<string, DirectedResult<any>>;
+
   constructor(knex: Knex) {
     super();
 
@@ -28,15 +50,16 @@ export class PersonStoreDataSource extends DataSource {
       //   debug: process.env.NODE_ENV !== 'production',
       // }),
     );
+    this.personLoader = createPersonLoader(this.store);
+    this.queryLoader = createQueryLoader(this.store);
   }
+
   async getEdgesForPerson(id: string) {
-    return this.store.queryDirected([{ id, limit: 100 }]);
+    return this.queryLoader.load(id);
   }
 
-  async getPersons(ids: string[]) {
-    const persons = await this.store.getPersons(ids, ids.length);
-
-    return ids.map(id => persons.get(id)).filter(i => i);
+  async getPerson(id: string) {
+    return this.personLoader.load(id);
   }
 
   async createPerson(name: string) {

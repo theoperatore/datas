@@ -10,14 +10,8 @@ type Context = {
 
 export const resolvers: Resolvers<Context> = {
   Query: {
-    async persons(_parent, args, { dataSources }) {
-      const dbPersons = await dataSources.personStore.getPersons(args.ids);
-      return dbPersons.map(person => ({
-        id: person.id,
-        name: person.name,
-        personToMe: [],
-        meToPerson: [],
-      }));
+    async persons(_, args) {
+      return args.ids.map(id => ({ id } as Person));
     },
     async search(_, args, { dataSources }) {
       const results = await dataSources.personStore.search(
@@ -64,17 +58,17 @@ export const resolvers: Resolvers<Context> = {
   },
   Person: {
     name: async (parent, _args, { dataSources }) => {
-      if (parent.name) return parent.name;
-
-      const [person] = await dataSources.personStore.getPersons([parent.id]);
+      // TODO: if person is not found, do we want to check for that?
+      // right trying to get the person.name will throw an exception
+      // and fail the entire query.
+      const person = await dataSources.personStore.getPerson(parent.id);
       return person.name;
     },
     personToMe: async (parent, _args, { dataSources }) => {
-      const edgesMap = await dataSources.personStore.getEdgesForPerson(
-        parent.id,
-      );
-      const edges = edgesMap.get(parent.id);
+      const edges = await dataSources.personStore.getEdgesForPerson(parent.id);
 
+      // TODO: this should only happen when there is an error with querying
+      // the db.
       if (!edges) return [];
 
       return edges.parents.map(edge => {
@@ -88,11 +82,10 @@ export const resolvers: Resolvers<Context> = {
       });
     },
     meToPerson: async (parent, _args, { dataSources }) => {
-      const edgesMap = await dataSources.personStore.getEdgesForPerson(
-        parent.id,
-      );
-      const edges = edgesMap.get(parent.id);
+      const edges = await dataSources.personStore.getEdgesForPerson(parent.id);
 
+      // TODO: this should only happen when there is an error with querying
+      // the db.
       if (!edges) return [];
 
       return edges.children.map(edge => {

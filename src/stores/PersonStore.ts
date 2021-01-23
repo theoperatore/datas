@@ -54,7 +54,7 @@ export class PersonStore implements IPersonStore {
     return ids;
   }
 
-  async getPersons<T>(ids: string[], limit: number = 10) {
+  async getPersons<T>(ids: readonly string[], limit: number = 10) {
     const result: Person<T>[] = await this.knex
       .select('*')
       .from('persons')
@@ -155,48 +155,19 @@ export class PersonStore implements IPersonStore {
   }
 
   async queryDirected<E>(q: Query[]) {
-    return this.knex.transaction(async trx => {
-      const results = [];
-      for (const query of q) {
-        const [children, parents] = await Promise.all([
-          trx
-            .select('*')
-            .from('edges')
-            .where('a_id', query.id)
-            .andWhere(b => {
-              if (query.relType) {
-                return b.where('rel_type', query.relType);
-              }
-            })
-            .limit(query.limit || 100),
-          trx
-            .select('*')
-            .from('edges')
-            .where('b_id', query.id)
-            .andWhere(b => {
-              if (query.relType) {
-                return b.where('rel_type', query.relType);
-              }
-            })
-            .limit(query.limit || 100),
-        ]);
-
-        results.push([
-          query.id,
-          {
-            parents: parents.map(r => {
-              const data = typeof r.data === 'string' ? JSON.parse(r.data) : {};
-              return { ...r, id: `${r.id}`, data };
-            }),
-            children: children.map(r => {
-              const data = typeof r.data === 'string' ? JSON.parse(r.data) : {};
-              return { ...r, id: `${r.id}`, data };
-            }),
-          },
-        ]);
-      }
-
-      return new Map<string, DirectedResult<E>>(results);
+    const results = await this.query<E>(q);
+    const grouped: [string, DirectedResult<E>][] = q.map(query => {
+      const result = results.get(query.id);
+      return [
+        query.id,
+        {
+          // a => b, so if I find my id in b, then a is my parent.
+          parents: result.filter(r => r.b_id === query.id),
+          // a => b, so if I find my id in a, then b is my child.
+          children: result.filter(r => r.a_id === query.id),
+        },
+      ];
     });
+    return new Map<string, DirectedResult<E>>(grouped);
   }
 }
