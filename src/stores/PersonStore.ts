@@ -64,16 +64,30 @@ export class PersonStore implements IPersonStore {
     return new Map(result.map(p => [`${p.id}`, { ...p, id: `${p.id}` }]));
   }
 
-  async putPersons<T>(persons: Omit<Person<T>, 'id'>[]) {
+  async putPersons<T>(persons: { id?: string; name: string; data?: T }[]) {
     return this.knex.transaction(async trx => {
       const out: Person<T>[] = [];
       for (const person of persons) {
-        const [id] = await trx
-          .insert({
-            name: person.name,
-            data: JSON.stringify(person.data || {}),
-          })
-          .into('persons');
+        let id: number | string;
+        if (person.id) {
+          await trx('persons')
+            .update({
+              name: person.name,
+              data: JSON.stringify(person.data || {}),
+            })
+            .where('id', person.id);
+
+          id = person.id;
+        } else {
+          const result = await trx
+            .insert({
+              name: person.name,
+              data: JSON.stringify(person.data || {}),
+            })
+            .into('persons');
+
+          id = result[0];
+        }
 
         const [record] = await trx
           .select('*')

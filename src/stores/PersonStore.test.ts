@@ -40,6 +40,47 @@ test('It can create a person', async () => {
   expect(result[0]).toMatchObject(al);
 });
 
+test('It can update a person', async () => {
+  const store = new PersonStore(knex);
+  const al = {
+    name: 'Al',
+  };
+  const [result] = await store.putPersons([al]);
+  expect(result).toMatchObject(al);
+
+  const albert = {
+    ...result,
+    name: 'Albert',
+  };
+
+  const [updated] = await store.putPersons([albert]);
+  expect(updated.id).toBe(albert.id);
+  expect(updated).toMatchObject(albert);
+});
+
+test('It can update and create at once a person', async () => {
+  const store = new PersonStore(knex);
+  const al = {
+    name: 'Al',
+  };
+  const [result] = await store.putPersons([al]);
+  expect(result).toMatchObject(al);
+
+  const albert = {
+    ...result,
+    name: 'Albert',
+  };
+
+  const al2 = {
+    name: 'Al2',
+  };
+
+  const [al2Result, updated] = await store.putPersons([al2, albert]);
+  expect(al2Result).toMatchObject(al2);
+  expect(updated.id).toBe(albert.id);
+  expect(updated).toMatchObject(albert);
+});
+
 test('It can create many persons', async () => {
   const store = new PersonStore(knex);
   const al1 = {
