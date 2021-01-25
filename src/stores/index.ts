@@ -3,7 +3,7 @@ import Knex from 'knex';
 import DataLoader from 'dataloader';
 import {
   RelationshipInput,
-  RelationshipType,
+  RelationshipKind,
 } from '../schema/schema.generated';
 import { PersonStore } from './PersonStore';
 import { Person, DirectedResult } from './IPersonStore';
@@ -51,13 +51,13 @@ export class PersonStoreDataSource extends DataSource {
     return result;
   }
 
-  async linkPersons(a_id: string, b_id: string, type: RelationshipType) {
+  async linkPersons(a_id: string, b_id: string, type: RelationshipKind) {
     return this.store.putEdges([{ a_id, b_id, rel_type: type }]);
   }
 
   async createRelationships(a_id: string, rels: RelationshipInput[]) {
     if (rels.length === 0) return [];
-    const edges = rels.map(e => ({ a_id, b_id: e.otherId, rel_type: e.type }));
+    const edges = rels.map(e => ({ a_id, b_id: e.otherId, rel_type: e.kind }));
     return await this.store.putEdges(edges);
   }
 

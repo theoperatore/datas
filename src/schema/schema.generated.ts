@@ -50,12 +50,12 @@ export type MutationCreatePersonArgs = {
 export type MutationLinkPersonsArgs = {
   from: Scalars['ID'];
   to: Scalars['ID'];
-  type: RelationshipType;
+  type: RelationshipKind;
 };
 
 export type RelationshipInput = {
   otherId: Scalars['ID'];
-  type: RelationshipType;
+  kind: RelationshipKind;
 };
 
 export type SearchResult = {
@@ -75,10 +75,10 @@ export type Relationship = {
   __typename?: 'Relationship';
   id: Scalars['ID'];
   person: Person;
-  type: RelationshipType;
+  kind: RelationshipKind;
 };
 
-export enum RelationshipType {
+export enum RelationshipKind {
   ParentOf = 'PARENT_OF',
   Spouse = 'SPOUSE',
 }
@@ -212,7 +212,7 @@ export type ResolversTypes = ResolversObject<{
   SearchResult: ResolverTypeWrapper<SearchResult>;
   Person: ResolverTypeWrapper<Person>;
   Relationship: ResolverTypeWrapper<Relationship>;
-  RelationshipType: RelationshipType;
+  RelationshipKind: RelationshipKind;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -298,7 +298,7 @@ export type RelationshipResolvers<
 > = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   person?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['RelationshipType'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['RelationshipKind'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

@@ -79,7 +79,7 @@ export const resolvers: Resolvers<Context> = {
       return edges.parents.map(edge => {
         return {
           id: edge.id,
-          type: edge.rel_type,
+          kind: edge.rel_type,
           person: {
             id: edge.a_id,
           } as Person,
@@ -96,7 +96,7 @@ export const resolvers: Resolvers<Context> = {
       return edges.children.map(edge => {
         return {
           id: edge.id,
-          type: edge.rel_type,
+          kind: edge.rel_type,
           person: {
             id: edge.b_id,
           } as Person,

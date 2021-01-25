@@ -26,7 +26,7 @@ import Head from 'next/head';
 //   offspring: Family[];
 // };
 
-export default function Family() {
+export default function FamilyVisualization() {
   const svgRef = useRef<SVGSVGElement>();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 

@@ -11,12 +11,12 @@ export const typeDefs = gql`
       name: String!
       relationships: [RelationshipInput!] = []
     ): Person!
-    linkPersons(from: ID!, to: ID!, type: RelationshipType!): Boolean
+    linkPersons(from: ID!, to: ID!, type: RelationshipKind!): Boolean
   }
 
   input RelationshipInput {
     otherId: ID!
-    type: RelationshipType!
+    kind: RelationshipKind!
   }
 
   type SearchResult {
@@ -33,10 +33,10 @@ export const typeDefs = gql`
   type Relationship {
     id: ID!
     person: Person!
-    type: RelationshipType!
+    kind: RelationshipKind!
   }
 
-  enum RelationshipType {
+  enum RelationshipKind {
     PARENT_OF
     SPOUSE
   }
