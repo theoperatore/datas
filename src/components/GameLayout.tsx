@@ -38,6 +38,16 @@ export function GameLayout(props: Props) {
             </p>
           )}
         </div>
+        <div className="flex flex-row flex-wrap mb-8 gap-2">
+          {game.concepts?.map(concept => (
+            <p
+              key={concept.id}
+              className="bg-yellow-800 p-1 text-sm rounded whitespace-nowrap text-gray-100"
+            >
+              {concept.name}
+            </p>
+          ))}
+        </div>
         <p className="mb-4">{game.deck || 'No short description'}</p>
         <a
           className="underline hover:no-underline"
