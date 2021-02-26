@@ -35,6 +35,11 @@ const MOCK_GAME: Game = {
   expected_release_quarter: '',
   expected_release_year: '',
   original_release_date: '',
+  characters: [],
+  concepts: [],
+  developers: [],
+  guid: '123',
+  themes: [],
 };
 
 test('It fails if no token is provided', () => {
@@ -97,7 +102,17 @@ test('It returns a game', () => {
       return res.once(ctx.json({ error: 'OK', number_of_total_results: 100 }));
     }),
     rest.get('https://www.giantbomb.com/api/games/', (req, res, ctx) => {
-      return res.once(ctx.json({ error: 'OK', results: [MOCK_GAME] }));
+      return res.once(
+        ctx.json({
+          error: 'OK',
+          results: [
+            { api_detail_url: 'https://www.giantbomb.com/api/game/abc/' },
+          ],
+        }),
+      );
+    }),
+    rest.get('https://www.giantbomb.com/api/game/abc/', (req, res, ctx) => {
+      return res.once(ctx.json({ error: 'OK', results: MOCK_GAME }));
     }),
   );
 
